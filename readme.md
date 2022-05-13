@@ -1,5 +1,5 @@
 # Build an API using PosgreSQL and pg-promise
- [![Build Status](https://app.travis-ci.com/Gideon877/api-with-psql-workshop.svg?token=dGcfHWcsAm5uuxvU8DFd&branch=main)](https://app.travis-ci.com/Gideon877/api-with-psql-workshop) ![node workflow](https://github.com/gideon877/api-with-psql-workshop/actions/workflows/node.js.yml/badge.svg)
+ [![Build Status](https://app.travis-ci.com/Gideon877/api-with-psql-workshop.svg?token=dGcfHWcsAm5uuxvU8DFd&branch=main)](https://app.travis-ci.com/Gideon877/api-with-psql-workshop) ![node workflow](https://github.com/gideon877/mt-pg-promise-crud/actions/workflows/node.js.yml/badge.svg)
 
 This workshop builds on the [psql refresher workshop]() you should use SQL that you wrote in that workshop to create the API endpoints needed to make the Unit Tests pass. 
 
