@@ -1,0 +1,260 @@
+body {
+	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+	color: #0B3142;
+	background-image: linear-gradient(to right, rgba(18, 68, 71, 0.767), #2c092cf8, rgba(11, 87, 87, 0.603));
+
+}
+
+.header {
+	color: white;
+	animation-name: header;
+	animation-duration: 4s;
+	animation-delay: 1s;
+}
+
+@keyframes header {
+	from {
+		color: orange;
+		text-decoration: line-through;
+	}
+
+	to {
+		color: rgb(255, 255, 255);
+	}
+}
+
+.container {
+	margin: auto;
+	width: 60%;
+}
+
+img {
+	display: inline-block;
+}
+
+.caption {
+	display: block;
+	text-align: center;
+}
+
+.garments {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.garment {
+	flex: 1;
+	background-color: beige;
+	border: 1px solid greenyellow;
+	padding: 1em;
+	background-color: #F1F7ED;
+	margin: 0.25em;
+	border-radius: 0.5em;
+}
+
+.hidden {
+	display: none;
+}
+
+.field label {
+	display: block;
+	width: 5em;
+	margin-top: 0.5em;
+}
+
+.field {
+	font-size: 1em !important;
+}
+
+.mt1 {
+	margin-top: 1em;
+}
+
+
+.message {
+
+	margin-top: 1em;
+	padding: 1em;
+
+	background-color: lightsalmon;
+
+
+}
+
+.top-section {
+	display: flex;
+}
+
+.filter {
+	flex: 1;
+	color: white !important;
+}
+
+.cart {
+	flex: 1;
+	/* border: 1px solid; */
+	z-index: 999;
+	padding: 1em;
+	border-radius: 0.25em;
+	background-color: lightgreen;
+}
+
+.cart table {
+	width: 100%;
+}
+
+th,
+td {
+	padding: 0.25em;
+	text-align: left;
+}
+
+body {
+	font-family: 'Playfair Display', serif;
+}
+
+/* Button style */
+
+.logout {
+	background-color: white;
+	color: black;
+	border: 1px solid #11e178;
+	border-radius: 0.2em;
+	font-family: 'Lobster Two', cursive;
+	/* font-size: x-large; */
+}
+
+.logout:hover {
+	background-color: red;
+	color: white;
+	cursor: grabbing;
+	border: 2px solid black;
+	font-family: 'Lobster Two', cursive;
+}
+
+.addGarmentBtn,
+.hideAddGarmetBtn {
+	background-color: white;
+	color: black;
+	border: 1px solid #11e178;
+	border-radius: 0.2em;
+	font-family: 'Lobster Two', cursive;
+	font-size: x-large;
+}
+
+.addGarmentBtn:hover,
+.hideAddGarmetBtn:hover {
+	background-color: black;
+	color: white;
+	cursor: grabbing;
+	border: 2px solid black;
+	font-family: 'Lobster Two', cursive;
+}
+
+a {
+	border: 1px solid;
+	padding: 10px;
+	border-radius: 0.25em;
+	background: black;
+	text-decoration: none;
+	color: white;
+}
+
+/* snackbar styling */
+
+#snackbar {
+	visibility: hidden;
+	min-width: 250px;
+	margin-left: -125px;
+	background-color: red;
+	color: #fff;
+	text-align: center;
+	border-radius: 2px;
+	padding: 16px;
+	position: fixed;
+	z-index: 1;
+	left: 50%;
+	bottom: 30px;
+	font-size: 2em;
+	font-family: 'Playfair Display', serif;
+	font-family: 'Roboto Mono', monospace;
+}
+
+#snackbar.show {
+	visibility: visible;
+	-webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+	animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+	from {
+		bottom: 0;
+		opacity: 0;
+	}
+
+	to {
+		bottom: 30px;
+		opacity: 1;
+	}
+}
+
+@keyframes fadein {
+	from {
+		bottom: 0;
+		opacity: 0;
+	}
+
+	to {
+		bottom: 30px;
+		opacity: 1;
+	}
+}
+
+@-webkit-keyframes fadeout {
+	from {
+		bottom: 30px;
+		opacity: 1;
+	}
+
+	to {
+		bottom: 0;
+		opacity: 0;
+	}
+}
+
+@keyframes fadeout {
+	from {
+		bottom: 30px;
+		opacity: 1;
+	}
+
+	to {
+		bottom: 0;
+		opacity: 0;
+	}
+}
+
+
+
+@media only screen and (max-width: 600px) {
+	body {
+		background-color: rgb(227, 238, 241);
+		font-weight: bolder !important;
+		color: rgb(27, 12, 12) !important;
+	}
+
+
+}
+
+
+
+@media screen {
+	.ui.teal.menu .active.item {
+		font-size: 0.6em !important;
+		background-color: black !important;
+	}
+
+	body {
+		background-color: pink;
+	}
+}

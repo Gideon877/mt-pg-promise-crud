@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <script src="semantic/semantic.min.css"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="index.js"></script>
+    <title>Missy Tee</title>
+</head>
+
+<body>
+
+
+
+    <div x-data="shop">
+
+
+
+        <div x-show="signIn" class="ui container">
+            <h3 style="padding:5em" align="center">Sign in
+                <br>
+                <!-- <button class="ui button green" @click="login()">Login</button> -->
+            </h3>
+
+            <div :class=" loading ? 'ui loading form' : 'ui form'">
+                <div class="field">
+                    <label>First Name</label>
+                    <input type="text" name="first-name" placeholder="First Name">
+                </div>
+                <div class="field">
+                    <label>Last Name</label>
+                    <input type="text" name="last-name" placeholder="Last Name">
+                </div>
+                <!-- <div class="field">
+                    <div class="ui checkbox">
+                        <input type="checkbox" tabindex="0" class="hidden">
+                        <label>I agree to the Terms and Conditions</label>
+                    </div>
+                </div> -->
+                <button class="ui button" @click="login()" type="submit">Login</button>
+            </div>
+            <div class="ui message" x-show="error" x-text="error"></div>
+        </div>
+
+
+        <!-- Has been authenticated -->
+
+        <div x-show="!signIn" class="ui container">
+            <div class="computer only row">
+                <div class="column">
+                    <div class="ui labeled teal icon pushable menu">
+                        <a class="item active">
+                            <i class="home icon"></i>
+                            Home
+                        </a>
+                        <a class="item active">
+                            <i class="add icon"></i>
+                            Add
+                        </a>
+                        <div class="right menu">
+                            <a class="item active">
+                                <i class="user icon"></i>
+                                <b x-text="user.username">user</b>
+                            </a>
+                            <a class="item active" @click="logout()">
+                                <i class="sign-out icon"></i>
+                                Logout
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter menu -->
+
+            <div class="filter">
+                <h2>Filter</h2>
+                <div class="genders ui form">
+                    <div class="inline fields">
+                        <label for="gender">Select gender:</label>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" type="radio" name="gender" x-model="genderFilter"
+                                        value=""> All
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="genderFilter" type="radio" name="gender"
+                                        value="Male"> Male
+                                </label>
+
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="genderFilter" type="radio" name="gender"
+                                        value="Female"> Female
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="genderFilter" type="radio" name="gender"
+                                        value="Unisex"> Unisex
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="seasons ui form">
+
+                    <div class="inline fields">
+                        <label for="season">Select season:</label>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value=""> All
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value="Summer"> Summer
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value="Winter"> Winter
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value="All Seasons"> All
+                                    seasons
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ui form">
+                    <div class="inline field">
+                        <label for="range">Filter by price range:</label>
+                        <input type="range" @change="getGarmentsByPrice()" x-model="maxPrice" name="maxPrice" max="1000"
+                            step="50" class="maxPrice ui range" value="0">
+                        <i class="euro sign icon"></i><span class="showmaxPrice" x-text="maxPrice">0</span>.00
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            <!-- Divider -->
+
+            <h3 class="header" align="center">Missy Tee - clothing store </h3>
+
+            <h4 class="ui horizontal divider header">
+                <div class="ui labeled button" tabindex="0">
+                    <div class="ui red button">
+                        <i class="stop icon"></i> Garments
+                    </div>
+                    <a x-text="garments.length" class="ui basic red left pointing label">
+                        0
+                    </a>
+                </div>
+            </h4>
+
+            <!-- Garments -->
+            <br>
+
+
+            <div x-show="garment.length < 1" class="ui negative message transition">
+                <i class="close icon"></i>
+                <div class="header">
+                    We're sorry we can't show you more results
+                </div>
+                <p>That filter need some change
+                </p>
+            </div>
+            <div class="ui five stackable cards">
+                <template x-for="garment in garments">
+                    <div class="card">
+                        <div class="image">
+                            <img :src="`/images/${garment.img}`" alt="photo">
+                        </div>
+                        <div class="content">
+                            <div x-text="garment.description" class="header"></div>
+                            <div class="meta">
+                                <p x-text="garment.season"></p>
+                            </div>
+                            <div class="description" x-text="garment.gender"></div>
+                        </div>
+                        <div class="extra content">
+                            <p>
+                                <i class="euro sign icon"></i>
+                                <b x-text="garment.price">30.99</b>
+                            </p>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+
+
+
+
+            <!-- Footer -->
+            <h4 class="ui horizontal divider header">
+                <i class="info icon"></i>
+                Info
+            </h4>
+            <div class="footer">
+                <div class="contact">
+                    <strong>Contact us at:</strong>
+                    (021)-541-1000
+
+                    <strong>twitter /fb /insta </strong> @missy_tee
+                </div>
+                <div class="address">
+                    Missy Tee, Good Plaza
+                    <br>
+                    Dough Road
+                    <br>
+                    Base Town
+                    <br>
+                    7890
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <!-- <script src="app.js"></script> -->
+    <!-- <script src="field-manager.js"></script> -->
+    <!-- <script src="add-garment.js"></script> -->
+</body>
+
+</html>
