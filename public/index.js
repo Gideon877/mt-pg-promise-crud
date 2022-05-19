@@ -3,6 +3,8 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('shop', () => {
         return {
             signIn: false,
+            signUp: false,
+            showMenu: false,
             loading: false,
             error: null,
             genderFilter: '',
@@ -21,6 +23,7 @@ document.addEventListener('alpine:init', () => {
                 if (this.user.token == undefined) {
                     this.signIn = true;
                 } else {
+                    this.showMenu = true;
                     this.getGarments();
                 }
             },
@@ -39,6 +42,7 @@ document.addEventListener('alpine:init', () => {
                             this.getGarments();
                             this.error = null;
                             this.signIn = false;
+                            this.showMenu = true;
                         }, 1500);
                     })
                     .catch((e) => setTimeout(() => this.error = `Wrong username or password`, 500));
@@ -49,7 +53,15 @@ document.addEventListener('alpine:init', () => {
             },
             logout() {
                 this.signIn = true;
+                this.user = {}
+                this.showMenu = false;
                 localStorage.clear('token');
+            },
+
+            register() {
+                alert(JSON.stringify(this.user));
+                this.signIn = true;
+                this.signUp = false;
             },
 
             getGarmentsByPrice() {
