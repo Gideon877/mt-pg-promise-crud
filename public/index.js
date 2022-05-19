@@ -1,3 +1,10 @@
+/** 
+ * todo: 
+ * - add pagination
+ * - add register user function
+ * - verify user is registered
+ * - add user profile page
+ */
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('shop', () => {
@@ -13,10 +20,19 @@ document.addEventListener('alpine:init', () => {
             maxPrice: 10,
             garments: [],
             addGarment: false,
+            garmentData: {
+                description: '',
+                price: '',
+                img: 'fashion.png',
+                season: '',
+                gender: ''
+            },
             user: {
                 username: 'Gideon877',
                 token: null,
                 password: 'password',
+                lastName: 'Smith',
+                firstName: 'John',
             },
             showFeedback: false,
 
@@ -29,17 +45,43 @@ document.addEventListener('alpine:init', () => {
             init() {
                 this.user.token = localStorage['token'];
                 if (this.user.token == undefined) {
-                    this.signUp = true;
+                    this.signIn = true;
                 } else {
                     this.showMenu = true;
                     this.getGarments();
                 }
             },
 
+            add(garment) {
+                alert('add' + JSON.stringify(garment.season));
+            },
+
+            create() {
+                const { token } = this.user;
+                axios
+                    .post(`/api/garment/`, { ...this.garmentData, token })
+                    .then((result) => result.data.garments)
+                    .then(garments => this.errors.description = `Garment added successfully`)
+                    .catch(err =>
+                        (err.response.status == 401)
+                            ? this.signIn = true
+                            : this.garments = []
+                    );
+            },
+
+            edit(garment) {
+                alert('edit' + JSON.stringify(garment.season));
+            },
+
+            remove(garment) {
+                alert('remove' + JSON.stringify(garment.season));
+            },
+
             login() {
                 this.loading = true;
+                const { username, password } = this.user;
                 // Authenticate app on click handler
-                axios.post('/api/login', { username: this.user.username })
+                axios.post('/api/login', { username, password })
                     .then(result => result.data)
                     .then(auth => {
                         setTimeout(() => {
@@ -59,15 +101,16 @@ document.addEventListener('alpine:init', () => {
                     this.error = null;
                 }, 2000)
             },
+
             logout() {
                 this.signIn = true;
                 this.user = {}
                 this.showMenu = false;
                 localStorage.clear('token');
                 this.errors = {
-                    header: `Username not found`,
-                    description: `You have been logged out!`,
-                    status: 'negative'
+                    header: `Logging out`,
+                    description: `You are logging out of the application`,
+                    status: 'success'
                 };
                 this.showFeedback = true;
                 this.clearMessage();
@@ -77,19 +120,32 @@ document.addEventListener('alpine:init', () => {
                 this.signUpLoading = true;
                 alert(JSON.stringify(this.user));
                 this.showFeedback = true;
-
-                setTimeout(() => {
-                    this.signIn = true;
-                    this.signUp = false;
-                    this.signUpLoading = false;
-                    this.errors = {
-                        header: `Signup successfully. `,
-                        status: 'success',
-                        description: `Login with your username and password to access the dashboard.`
-                    };
-                    this.clearMessage();
-                }, 3000);
-
+                axios
+                    .post(`/api/user/`, { ...this.user })
+                    .then(() => setTimeout(() => {
+                        this.signIn = true;
+                        this.signUp = false;
+                        this.signUpLoading = false;
+                        this.errors = {
+                            header: `Signup successfully. `,
+                            status: 'success',
+                            description: `Login with your username and password to access the dashboard.`
+                        };
+                        this.clearMessage();
+                    }, 3000))
+                    .catch(err => {
+                        if (err.response.status == 501) {
+                            this.signIn = false
+                            this.signUpLoading = false;
+                            this.errors = {
+                                header: `Signup failed`,
+                                description: 'A user with the same username already exists. Specify another username.',
+                                status: 'negative',
+                            }
+                            this.showFeedback = true;
+                            this.clearMessage();
+                        }
+                    });
             },
 
             clearMessage() {

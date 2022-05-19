@@ -1,4 +1,5 @@
 const auth = require("./middleware/auth");
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 module.exports = (app, db) => {
@@ -13,9 +14,13 @@ module.exports = (app, db) => {
 
 	app.post('/api/login', async (req, res) => {
 		try {
-			const { username } = req.body;
-			const user = await db.one(`select id, first_name, last_name, username from users where username = $1`, [username])
+			const { username, password } = req.body;
+			const user = await db.oneOrNone(`select * from users where username = $1`, [username]);
 			if (username && user.username) {
+				const isEqual = await bcrypt.compare(password, user.password);
+				if (!isEqual) {
+					throw new Error('Password is incorrect!');
+				}
 				const token = jwt.sign({ username }, 'secret', { expiresIn: '1h' });
 
 				res.status(200).json({
@@ -32,6 +37,7 @@ module.exports = (app, db) => {
 				res.status(501).json({})
 			}
 		} catch (error) {
+			console.error(error)
 			res.status(501).json(error)
 		}
 	})
@@ -39,11 +45,10 @@ module.exports = (app, db) => {
 
 	app.get('/api/garments', auth, async (req, res) => {
 
+		let garments = [];
 		try {
 			const { gender, season } = req.query;
-			console.log(!gender);
-			let garments = [];
-			// add some sql queries that filter on gender & season
+
 			if (!season && !gender) {
 				garments = await db.many(`select * from garment`);
 			}
@@ -62,7 +67,10 @@ module.exports = (app, db) => {
 				garments
 			})
 		} catch (error) {
-			console.log(error)
+			res.json({
+				data: garments,
+				garments
+			})
 		}
 	});
 
@@ -186,6 +194,27 @@ module.exports = (app, db) => {
 			})
 		}
 	});
+
+	app.post('/api/user', async (req, res) => {
+		try {
+			const { username, password, firstName, lastName } = req.body;
+			const existingUser = await db.oneOrNone(`select * from users where username = $1`, [username]);
+			if (existingUser !== null) {
+				throw new Error('A user with the same username already exists. Specify another username.')
+			}
+			const hashedPassword = await bcrypt.hash(password, 12);
+
+			await db.none(`insert into users (username, password, first_name, last_name) values($1, $2, $3, $4)`, [username, hashedPassword, firstName, lastName]);
+			res.status(200).json({});
+
+		} catch (error) {
+			console.log(error);
+			res.status(501).json({
+				status: 'failed',
+				error: error.stack
+			})
+		}
+	})
 
 
 
