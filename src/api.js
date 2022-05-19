@@ -2,7 +2,12 @@ const auth = require("./middleware/auth");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-module.exports = (app, db) => {
+module.exports = async (app, db) => {
+
+	const getTotal = async (req, res) => {
+		const result = await db.one('select count(*) from garment');
+		return result.count;
+	}
 
 	app.get('/api/test', (req, res) => {
 		res.json({
@@ -47,10 +52,14 @@ module.exports = (app, db) => {
 
 		let garments = [];
 		try {
-			const { gender, season } = req.query;
-
+			const { gender, season, page = 1 } = req.query;
+			const count = await getTotal() || 10;
+			const limit = Number(count / 3).toFixed();
+			let offset = (page - 1) * limit + 1;
+			offset = (offset == 1) ? 0 : offset;
+			
 			if (!season && !gender) {
-				garments = await db.many(`select * from garment`);
+				garments = await db.many(`select * from garment limit $1 offset $2`, [limit, offset]);
 			}
 			if (!gender && season) {
 				garments = await db.many(`select * from garment where season = $1`, [season]);
@@ -61,12 +70,12 @@ module.exports = (app, db) => {
 			if (season && gender) {
 				garments = await db.many(`select * from garment where gender = $1 and season = $2`, [gender, season]);
 			}
-
 			res.json({
 				data: garments,
 				garments
 			})
 		} catch (error) {
+			console.log(error)
 			res.json({
 				data: garments,
 				garments

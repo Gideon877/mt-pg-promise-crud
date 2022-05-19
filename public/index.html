@@ -32,7 +32,7 @@
 
         <div x-show="signIn" class="ui container">
             <h3 style="padding:5em" align="center">Sign in </h3>
-            
+
             <div :class=" loading ? 'ui loading form' : 'ui form'">
                 <div class="field">
                     <label>Username</label>
@@ -83,13 +83,15 @@
                     <input x-model="user.password" type="password" name="password" placeholder="Please Enter Password">
                 </div>
                 <div class="ui buttons">
-                    <button x-bind:disabled="user.password.length <= 4" :class="`ui positive ${signUpLoading ? 'loading' : ''} button`" @click="register()"
+                    <button x-bind:disabled="user.password.length <= 4"
+                        :class="`ui positive ${signUpLoading ? 'loading' : ''} button`" @click="register()"
                         type="submit">
                         <i class="users icon"></i>
                         Register
                     </button>
                     <div class="or"></div>
-                    <button :disabled="signUpLoading" class="ui pink button" @click="signIn = true, signUp = false" type="submit">
+                    <button :disabled="signUpLoading" class="ui pink button" @click="signIn = true, signUp = false"
+                        type="submit">
                         <i class="sign-in icon"></i>
                         Login
                     </button>
@@ -251,12 +253,31 @@
                         0
                     </a>
                 </div>
+                <div class="ui labeled button" tabindex="0">
+                    <div class="ui basic blue button">
+                        <i class="book icon"></i> Page
+                    </div>
+                    <a x-text="`${page} of 3`" class="ui basic left pointing blue label">
+                        
+                    </a>
+                </div>
             </h4>
 
             <!-- Garments -->
             <br>
 
+            <div aria-label="Pagination Navigation" role="navigation" class="ui pagination menu">
+                <div aria-current="false" aria-disabled="false" tabindex="0" value="1" aria-label="Previous item"
+                    type="prevItem" :class="page == 1 ? 'item disabled' : 'item'" @click="previous()">⟨</div>
+                <a aria-current="true" aria-disabled="false" tabindex="0" value="1" type="pageItem"
+                    @click="paginate(1)" :class="page == 1 ? 'active item' : 'item'">1</a>
+                <a aria-current="false" aria-disabled="false" tabindex="0" value="2" type="pageItem" @click="paginate(2)" :class="page == 2 ? 'active item' : 'item'">2</a>
+                <a aria-current="false" aria-disabled="false" tabindex="0" value="3" type="pageItem" @click="paginate(3)" :class="page == 3 ? 'active item' : 'item'">3</a>
+                <a aria-current="false" aria-disabled="false" tabindex="0" value="4" aria-label="Next item"
+                    type="nextItem" :class="page == 3 ? 'item disabled' : 'item'" @click="next()">⟩</a>
+            </div>
 
+            <br><br>
             <div x-show="garments.length < 1" class="ui negative message transition">
                 <i class="close icon"></i>
                 <div class="header">
@@ -349,8 +370,8 @@
 
     <script>
         $('.special.cards .image').dimmer({
-                on: 'hover'
-            });
+            on: 'hover'
+        });
     </script>
 </body>
 

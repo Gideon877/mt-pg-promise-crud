@@ -27,6 +27,7 @@ document.addEventListener('alpine:init', () => {
                 season: '',
                 gender: ''
             },
+            page: 1,
             user: {
                 username: 'Gideon877',
                 token: null,
@@ -55,6 +56,26 @@ document.addEventListener('alpine:init', () => {
             add(garment) {
                 alert('add' + JSON.stringify(garment.season));
             },
+
+            paginate(number){
+                this.page = Number(number)
+                this.getGarments();
+
+            },
+
+            next() { 
+                if(this.page < 3) {
+                    this.page++;
+                    this.getGarments();
+                }
+            },
+
+            previous() {
+                if (this.page > 1) {
+                    this.page--;
+                    this.getGarments();
+                }
+             },
 
             create() {
                 const { token } = this.user;
@@ -118,7 +139,6 @@ document.addEventListener('alpine:init', () => {
 
             register() {
                 this.signUpLoading = true;
-                alert(JSON.stringify(this.user));
                 this.showFeedback = true;
                 axios
                     .post(`/api/user/`, { ...this.user })
@@ -172,7 +192,7 @@ document.addEventListener('alpine:init', () => {
                 const { token } = this.user;
                 const { genderFilter, seasonFilter } = this;
                 axios
-                    .get(`/api/garments?gender=${genderFilter}&season=${seasonFilter}`, {
+                    .get(`/api/garments?gender=${genderFilter}&season=${seasonFilter}&page=${this.page}`, {
                         params: { token }
                     })
                     .then((result) => result.data.garments)
