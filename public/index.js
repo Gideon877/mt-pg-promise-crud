@@ -2,7 +2,6 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('shop', () => {
         return {
-
             signIn: false,
             loading: false,
             error: null,
@@ -10,12 +9,11 @@ document.addEventListener('alpine:init', () => {
             seasonFilter: '',
             maxPrice: 10,
             garments: [],
+            addGarment: false,
             user: {
                 username: 'Gideon877',
                 token: null,
-                getToken() {
-                    return this.token;
-                }
+                password: 'password',
             },
 
             init() {
@@ -29,31 +27,29 @@ document.addEventListener('alpine:init', () => {
 
             login() {
                 this.loading = true;
-                // Authenticate
+                // Authenticate app on click handler
                 axios.post('/api/login', { username: this.user.username })
                     .then(result => result.data)
                     .then(auth => {
                         setTimeout(() => {
                             localStorage.setItem('token', auth.token);
                             this.user = {
-                                ...this.user, token: auth.token
+                                ...auth.user, token: auth.token
                             };
+                            this.getGarments();
                             this.error = null;
                             this.signIn = false;
-                            this.getGarments();
                         }, 1500);
                     })
-                    .catch(() => setTimeout(() => this.error = `User not found!`, 500));
-
+                    .catch((e) => setTimeout(() => this.error = `Wrong username or password`, 500));
                 setTimeout(() => {
                     this.loading = false;
                     this.error = null;
-                    console.log('Done after 2 seconds', this.garments.length)
                 }, 2000)
             },
             logout() {
                 this.signIn = true;
-                localStorage.clear('token')
+                localStorage.clear('token');
             },
 
             getGarmentsByPrice() {
@@ -83,10 +79,7 @@ document.addEventListener('alpine:init', () => {
                             ? this.signIn = true
                             : null
                     );
-
-                setTimeout(() => console.log(this.garments[0]), 1000)
             },
-
 
         }
     });

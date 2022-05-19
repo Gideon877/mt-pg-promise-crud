@@ -1,14 +1,43 @@
-const auth = require("./src/middleware/auth");
+const auth = require("./middleware/auth");
+const jwt = require('jsonwebtoken');
 
-module.exports = function (app, db) {
+module.exports = (app, db) => {
 
-	app.get('/api/test', function (req, res) {
+	app.get('/api/test', (req, res) => {
 		res.json({
 			name: 'joe'
 		});
 	});
 
-	app.get('/api/garments', auth, async function (req, res) {
+	// API routes
+
+	app.post('/api/login', async (req, res) => {
+		try {
+			const { username } = req.body;
+			const user = await db.one(`select id, first_name, last_name, username from users where username = $1`, [username])
+			if (username && user.username) {
+				const token = jwt.sign({ username }, 'secret', { expiresIn: '1h' });
+
+				res.status(200).json({
+					token,
+					user: {
+						firstName: user.first_name,
+						lastName: user.last_name,
+						username: user.username,
+						id: user.id
+					}
+				})
+
+			} else {
+				res.status(501).json({})
+			}
+		} catch (error) {
+			res.status(501).json(error)
+		}
+	})
+
+
+	app.get('/api/garments', auth, async (req, res) => {
 
 		try {
 			const { gender, season } = req.query;
@@ -37,7 +66,7 @@ module.exports = function (app, db) {
 		}
 	});
 
-	app.put('/api/garment/:id', auth, async function (req, res) {
+	app.put('/api/garment/:id', auth, async (req, res) => {
 
 		try {
 
@@ -66,7 +95,7 @@ module.exports = function (app, db) {
 		}
 	});
 
-	app.get('/api/garment/:id', auth, async function (req, res) {
+	app.get('/api/garment/:id', auth, async (req, res) => {
 
 		try {
 			const { id } = req.params;
@@ -88,7 +117,7 @@ module.exports = function (app, db) {
 	});
 
 
-	app.post('/api/garment/', auth, async function (req, res) {
+	app.post('/api/garment/', auth, async (req, res) => {
 
 		try {
 
@@ -111,7 +140,7 @@ module.exports = function (app, db) {
 		}
 	});
 
-	app.get('/api/garments/grouped', auth, async function (req, res) {
+	app.get('/api/garments/grouped', auth, async (req, res) => {
 		// use group by query with order by asc on count(*)
 		try {
 			const result = await db.many(`select count(*), gender from garment group by gender order by gender desc`);
@@ -124,7 +153,7 @@ module.exports = function (app, db) {
 	});
 
 
-	app.delete('/api/garments', auth, async function (req, res) {
+	app.delete('/api/garments', auth, async (req, res) => {
 
 		try {
 			const { gender } = req.query;

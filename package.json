@@ -12,12 +12,14 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
-    "express": "^4.18.1",
     "axios": "^0.26.1",
     "dotenv": "^16.0.0",
+    "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",
     "mocha": "^9.2.2",
+    "nodemon": "^2.0.16",
     "pg-promise": "^10.11.1",
-    "supertest": "^6.2.2"
+    "supertest": "^6.2.2",
+    "update": "^0.7.4"
   }
 }

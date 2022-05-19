@@ -12,10 +12,16 @@
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
         integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <script src="semantic/semantic.min.css"></script>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> -->
     <script src="index.js"></script>
     <title>Missy Tee</title>
 </head>
+
+<style>
+    .red {
+        color: #db2829;
+    }
+</style>
 
 <body>
 
@@ -28,17 +34,16 @@
         <div x-show="signIn" class="ui container">
             <h3 style="padding:5em" align="center">Sign in
                 <br>
-                <!-- <button class="ui button green" @click="login()">Login</button> -->
             </h3>
 
             <div :class=" loading ? 'ui loading form' : 'ui form'">
                 <div class="field">
-                    <label>First Name</label>
-                    <input type="text" name="first-name" placeholder="First Name">
+                    <label>Username</label>
+                    <input x-model="user.username" type="text" name="username" placeholder="Please Enter Your Username">
                 </div>
                 <div class="field">
-                    <label>Last Name</label>
-                    <input type="text" name="last-name" placeholder="Last Name">
+                    <label>Password</label>
+                    <input x-model="user.password" type="password" name="password" placeholder="Please Enter Password">
                 </div>
                 <!-- <div class="field">
                     <div class="ui checkbox">
@@ -62,9 +67,9 @@
                             <i class="home icon"></i>
                             Home
                         </a>
-                        <a class="item active">
-                            <i class="add icon"></i>
-                            Add
+                        <a class="item active" @click="addGarment = !addGarment">
+                            <i :class="addGarment ? `close red icon` : `add icon`"></i>
+                            <span :class="addGarment ? 'red' : 'teal'" x-text="addGarment ? 'Close' : 'Add'"></span>
                         </a>
                         <div class="right menu">
                             <a class="item active">
@@ -83,7 +88,7 @@
 
             <!-- Filter menu -->
 
-            <div class="filter">
+            <div class="filter" x-show="!addGarment">
                 <h2>Filter</h2>
                 <div class="genders ui form">
                     <div class="inline fields">
@@ -200,7 +205,7 @@
             <br>
 
 
-            <div x-show="garment.length < 1" class="ui negative message transition">
+            <div x-show="garments.length < 1" class="ui negative message transition">
                 <i class="close icon"></i>
                 <div class="header">
                     We're sorry we can't show you more results
