@@ -9,6 +9,7 @@
     "test": "mocha"
   },
   "devDependencies": {
+    "node": "^14.19.1",
     "vite": "^2.9.9"
   },
   "dependencies": {
