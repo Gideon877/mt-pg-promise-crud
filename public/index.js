@@ -6,6 +6,7 @@ document.addEventListener('alpine:init', () => {
             signUp: false,
             showMenu: false,
             loading: false,
+            signUpLoading: false,
             error: null,
             genderFilter: '',
             seasonFilter: '',
@@ -17,11 +18,18 @@ document.addEventListener('alpine:init', () => {
                 token: null,
                 password: 'password',
             },
+            showFeedback: false,
+
+            errors: {
+                header: 'Just one second',
+                description: `We're fetching that content for you.`,
+                status: 'violet'
+            },
 
             init() {
                 this.user.token = localStorage['token'];
                 if (this.user.token == undefined) {
-                    this.signIn = true;
+                    this.signUp = true;
                 } else {
                     this.showMenu = true;
                     this.getGarments();
@@ -56,12 +64,39 @@ document.addEventListener('alpine:init', () => {
                 this.user = {}
                 this.showMenu = false;
                 localStorage.clear('token');
+                this.errors = {
+                    header: `Username not found`,
+                    description: `You have been logged out!`,
+                    status: 'negative'
+                };
+                this.showFeedback = true;
+                this.clearMessage();
             },
 
             register() {
+                this.signUpLoading = true;
                 alert(JSON.stringify(this.user));
-                this.signIn = true;
-                this.signUp = false;
+                this.showFeedback = true;
+
+                setTimeout(() => {
+                    this.signIn = true;
+                    this.signUp = false;
+                    this.signUpLoading = false;
+                    this.errors = {
+                        header: `Signup successfully. `,
+                        status: 'success',
+                        description: `Login with your username and password to access the dashboard.`
+                    };
+                    this.clearMessage();
+                }, 3000);
+
+            },
+
+            clearMessage() {
+                setTimeout(() => {
+                    this.errors = {};
+                    this.showFeedback = false;
+                }, 3000)
             },
 
             getGarmentsByPrice() {
