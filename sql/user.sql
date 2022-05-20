@@ -24,6 +24,3 @@ create table garment_cart
 	foreign key (cart_id) references cart(id),
     foreign key (garment_id) references garment(id)
 );
-
-
-insert into users(first_name, last_name, username, password) values ('King', 'Gideon', 'Gideon877', 'password')
