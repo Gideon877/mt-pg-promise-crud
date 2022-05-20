@@ -8,6 +8,9 @@
     "preview": "vite preview",
     "test": "mocha"
   },
+  "engines": {
+    "node": "14.x"
+  },
   "devDependencies": {
     "node": "^14.19.1",
     "vite": "^2.9.9"
