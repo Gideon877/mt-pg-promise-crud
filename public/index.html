@@ -120,14 +120,14 @@
         <div x-show="showMenu" class="ui container">
             <div class="computer only row">
                 <div class="column animate__animated animate__bounce animate__delay-1s animate__slow">
-                    <div class="ui labeled teal icon pushable menu">
+                    <div class="ui labeled black icon pushable menu">
                         <a class="item active">
                             <i class="home icon"></i>
                             Home
                         </a>
                         <a class="item active" @click="addGarment = !addGarment">
                             <i :class="addGarment ? `close red icon` : `add icon`"></i>
-                            <span :class="addGarment ? 'red' : 'teal'" x-text="addGarment ? 'Close' : 'Add'"></span>
+                            <span :class="addGarment ? 'red' : ''" x-text="addGarment ? 'Close' : 'Add'"></span>
                         </a>
                         <div class="right menu">
                             <a class="item active">
