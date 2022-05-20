@@ -15,11 +15,10 @@ app.use(express.urlencoded({ extended: false }));
 const garments = require('./src/garments.json');
 const DATABASE_URL = process.env.DATABASE_URL;
 const pgp = PgPromise({});
-const db = pgp({
-    url: DATABASE_URL,
-    ssl: process.env.DATABASE_SSL === `true`
-});
-
+const db = pgp(DATABASE_URL);
+(async ()=> {
+    console.log(await db.many('select * from users'))
+})()
 API(app, db);
 
 const PORT = process.env.PORT || 4017;
