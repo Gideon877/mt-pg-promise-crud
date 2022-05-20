@@ -14,21 +14,10 @@ app.use(express.urlencoded({ extended: false }));
 // import the dataset to be used
 const garments = require('./src/garments.json');
 const DATABASE_URL = process.env.DATABASE_URL;
-let ssl = null;
-if (process.env.NODE_ENV === 'development') {
-    ssl = { rejectUnauthorized: false };
-}
-
-const config = {
-    connectionString: DATABASE_URL,
-    max: 30,
-    ssl
-};
 const pgp = PgPromise({});
-const db = pgp(config);
-(async ()=> {
-    console.log(DATABASE_URL, '\n', await db.many('select * from users'), ssl)
-})()
+const db = pgp(DATABASE_URL);
+console.log({ DATABASE_URL })
+
 API(app, db);
 
 const PORT = process.env.PORT || 4017;
