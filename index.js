@@ -15,7 +15,11 @@ app.use(express.urlencoded({ extended: false }));
 const garments = require('./src/garments.json');
 const DATABASE_URL = process.env.DATABASE_URL;
 const pgp = PgPromise({});
-const db = pgp(DATABASE_URL);
+const db = pgp(DATABASE_URL, {
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 API(app, db);
 
