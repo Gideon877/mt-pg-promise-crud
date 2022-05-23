@@ -1,7 +1,6 @@
 const express = require('express');
 const PgPromise = require("pg-promise")
-
-const auth = require("./src/middleware/auth");
+const {ConnectionString} = require('connection-string');
 const API = require('./src/api');
 require('dotenv').config()
 
@@ -11,11 +10,23 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// import the dataset to be used
-const garments = require('./src/garments.json');
 const DATABASE_URL = process.env.DATABASE_URL;
+const cs = new ConnectionString(DATABASE_URL);
+
+const getPSQLConnection = () => {
+    return {
+        host: cs.hostname,
+        port: cs.port,
+        database: cs.path?.[0],
+        user: cs.user,
+        password: cs.password,
+        ssl: DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false },
+        application_name: cs.params?.application_name
+    };
+}
+
 const pgp = PgPromise({});
-const db = pgp(DATABASE_URL);
+const db = pgp(getPSQLConnection());
 
 API(app, db);
 
