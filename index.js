@@ -11,23 +11,11 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const config = {
-    logging: false,
-    ssl: true,
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
-    }
-}
-
 // import the dataset to be used
 const garments = require('./src/garments.json');
 const DATABASE_URL = process.env.DATABASE_URL;
 const pgp = PgPromise({});
-const db = pgp(DATABASE_URL, config);
-console.log({ DATABASE_URL })
+const db = pgp(DATABASE_URL);
 
 API(app, db);
 

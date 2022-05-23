@@ -211,7 +211,7 @@ module.exports = async (app, db) => {
 			if (existingUser !== null) {
 				throw new Error('A user with the same username already exists. Specify another username.')
 			}
-			const hashedPassword = await bcrypt.hash(password, 12);
+			const hashedPassword = await bcrypt.hash(password, 128);
 
 			await db.none(`insert into users (username, password, first_name, last_name) values($1, $2, $3, $4)`, [username, hashedPassword, firstName, lastName]);
 			res.status(200).json({});

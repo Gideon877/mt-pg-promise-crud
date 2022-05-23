@@ -5,7 +5,6 @@
  * - verify user is registered
  * - add user profile page
  */
-
 document.addEventListener('alpine:init', () => {
     Alpine.data('shop', () => {
         return {
