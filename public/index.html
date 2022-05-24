@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,20 +17,370 @@
     <script src="index.js"></script>
     <title>Missy Tee</title>
 </head>
+
+<style>
+    .red {
+        color: #db2829;
+    }
+</style>
+
 <body>
-    <div class="two column stackable ui grid">
-        <div class="column">
-          <div class="ui segment">
-            <p style="background-color: red;">1</p>
-            <p style="background-color: blue;">2</p>
-          </div>
+
+
+
+    <div x-data="shop">
+
+        <div x-show="signIn" class="ui container">
+            <h3 style="padding:5em" align="center">Sign in </h3>
+
+            <div :class=" loading ? 'ui loading form' : 'ui form'">
+                <div class="field">
+                    <label>Username</label>
+                    <input x-model="user.username" type="text" name="username" placeholder="Please Enter Your Username">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input :disabled="user.username.length <= 3" x-model="user.password" type="password" name="password"
+                        placeholder="Please Enter Password">
+                </div>
+                <div class="ui buttons">
+                    <button :disabled="user.password.length <= 4" class="ui positive button" @click="login()"
+                        type="submit">
+                        <i class="sign-in icon"></i>
+                        Login
+                    </button>
+                    <div class="or"></div>
+                    <button class="ui pink button" @click="signUp = true, signIn = false" type="submit">
+                        <i class="user secret icon"></i>
+                        Register
+                    </button>
+
+                </div>
+            </div>
+            <div class="ui message" x-show="error" x-text="error"></div>
         </div>
-        <div class="column">
-          <div class="ui segment">
-            <p style="background-color: red;">3</p>
-            <p style="background-color: blue;">4</p>
-          </div>
+
+        <div x-show="signUp" class="ui container">
+            <h3 style="padding:5em" align="center">Sign up </h3>
+
+            <div :class=" loading ? 'ui loading form' : 'ui form'">
+                <div class="field">
+                    <label>First Name</label>
+                    <input x-model="user.firstName" type="text" name="firstName"
+                        placeholder="Please Enter Your First Name">
+                </div>
+                <div class="field">
+                    <label>Last Name</label>
+                    <input x-model="user.lastName" type="text" name="lastName"
+                        placeholder="Please Enter Your Last Name">
+                </div>
+                <div class="field">
+                    <label>Username</label>
+                    <input x-model="user.username" type="text" name="username" placeholder="Please Enter Your Username">
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input x-model="user.password" type="password" name="password" placeholder="Please Enter Password">
+                </div>
+                <div class="ui buttons">
+                    <button x-bind:disabled="user.password.length <= 4"
+                        :class="`ui positive ${signUpLoading ? 'loading' : ''} button`" @click="register()"
+                        type="submit">
+                        <i class="users icon"></i>
+                        Register
+                    </button>
+                    <div class="or"></div>
+                    <button :disabled="signUpLoading" class="ui pink button" @click="signIn = true, signUp = false"
+                        type="submit">
+                        <i class="sign-in icon"></i>
+                        Login
+                    </button>
+                </div>
+            </div>
+            <div class="ui message" x-show="error" x-text="error"></div>
         </div>
-      </div>
+
+        <!-- Feedback Message -->
+
+        <div class="ui container">
+            <br>
+            <div x-show="showFeedback" :class="`ui icon message ${errors && errors.status ? errors.status : ''}` ">
+                <i class="notched circle loading icon"></i>
+                <div class="content">
+                    <div x-text="errors.header" class="header">
+                    </div>
+                    <p x-text="errors.description" class="description"></p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Has been authenticated -->
+
+        <div x-show="showMenu" class="ui container">
+            <div class="computer only row">
+                <div class="column animate__animated animate__bounce animate__delay-1s animate__slow">
+                    <div class="ui labeled teal icon pushable menu">
+                        <a class="item active">
+                            <i class="home icon"></i>
+                            Home
+                        </a>
+                        <a class="item active" @click="addGarment = !addGarment">
+                            <i :class="addGarment ? `close red icon` : `add icon`"></i>
+                            <span :class="addGarment ? 'red' : 'teal'" x-text="addGarment ? 'Close' : 'Add'"></span>
+                        </a>
+                        <div class="right menu">
+                            <a class="item active">
+                                <i class="user icon"></i>
+                                <b x-text="user.username">user</b>
+                            </a>
+                            <a class="item active" @click="logout()">
+                                <i class="sign-out icon"></i>
+                                Logout
+                            </a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Divider -->
+
+            <h3 class="header" align="center">Missy Tee - clothing store </h3>
+
+            <h4 class="ui horizontal divider header">
+                <div class="ui labeled button" tabindex="0">
+                    <div class="ui red button">
+                        <i class="stop icon"></i> Garments
+                    </div>
+                    <a x-text="garments.length" class="ui basic red left pointing label">
+                        0
+                    </a>
+                </div>
+                <div class="ui labeled button" tabindex="0">
+                    <div class="ui basic blue button">
+                        <i class="book icon"></i> Page
+                    </div>
+                    <a x-text="`${page} of 3`" class="ui basic left pointing blue label">
+
+                    </a>
+                </div>
+            </h4>
+
+            <!-- Garments -->
+            <br>
+            <!-- Filter menu -->
+
+            <div class="filter" x-show="!addGarment">
+                <h2>Filter</h2>
+                <div class="genders ui form">
+                    <div class="inline fields">
+                        <label for="gender">Select gender:</label>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input class="ui slider" @change="getGarments()" type="radio" name="gender"
+                                        x-model="genderFilter" value=""> All
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="genderFilter" type="radio" name="gender"
+                                        value="Male"> Male
+                                </label>
+
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="genderFilter" type="radio" name="gender"
+                                        value="Female"> Female
+                                </label>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="genderFilter" type="radio" name="gender"
+                                        value="Unisex"> Unisex
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="seasons ui form">
+
+                    <div class="inline fields">
+                        <label for="season">Select season:</label>
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value=""> All
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value="Summer"> Summer
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value="Winter"> Winter
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="ui radio">
+                                <label>
+                                    <input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
+                                        value="All Seasons"> All
+                                    seasons
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="ui form">
+                    <div class="inline field">
+                        <label for="range">Filter by price range:</label>
+                        <input type="range" @change="getGarmentsByPrice()" x-model="maxPrice" name="maxPrice" max="1000"
+                            step="50" class="maxPrice ui range" value="0">
+                        <i class="euro sign icon"></i><span class="showmaxPrice" x-text="maxPrice">0</span>.00
+                    </div>
+                </div>
+            </div>
+
+            <br>
+
+            <div aria-label="Pagination Navigation" role="navigation" class="ui pagination menu">
+                <div aria-current="false" aria-disabled="false" tabindex="0" value="1" aria-label="Previous item"
+                    type="prevItem" :class="page == 1 ? 'item disabled' : 'item'" @click="previous()">⟨</div>
+                <a aria-current="true" aria-disabled="false" tabindex="0" value="1" type="pageItem" @click="paginate(1)"
+                    :class="page == 1 ? 'active item' : 'item'">1</a>
+                <a aria-current="false" aria-disabled="false" tabindex="0" value="2" type="pageItem"
+                    @click="paginate(2)" :class="page == 2 ? 'active item' : 'item'">2</a>
+                <a aria-current="false" aria-disabled="false" tabindex="0" value="3" type="pageItem"
+                    @click="paginate(3)" :class="page == 3 ? 'active item' : 'item'">3</a>
+                <a aria-current="false" aria-disabled="false" tabindex="0" value="4" aria-label="Next item"
+                    type="nextItem" :class="page == 3 ? 'item disabled' : 'item'" @click="next()">⟩</a>
+            </div>
+
+            <br><br>
+            <div x-show="garments.length < 1" class="ui negative message transition">
+                <i class="close icon"></i>
+                <div class="header">
+                    We're sorry we can't show you more results
+                </div>
+                <p>That filter need some change
+                </p>
+            </div>
+            <div class="ui special five stackable cards animate__animated animate__fadeInLeft">
+                <template x-for="garment in garments">
+                    <div class="card">
+                        <div class="ui dimmer">
+                            <div class="content">
+                                <div class="center">
+                                    <div class="ui inverted button">Add Friend</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="image">
+                            <img :src="`/images/${garment.img}`" alt="photo">
+                        </div>
+                        <div class="content">
+                            <div x-text="garment.description" class="header"></div>
+                            <div class="meta">
+                                <p x-text="garment.season"></p>
+                            </div>
+                            <div class="description" x-text="garment.gender"></div>
+                        </div>
+                        <div class="extra content">
+                            <span class="left floated like">
+                                <p>
+                                    <i class="euro sign icon"></i>
+                                    <b x-text="garment.price">30.99</b>
+                                </p>
+                            </span>
+                            <span class="right floated star">
+                                <div class="mini ui buttons">
+                                    <button @click="create(garment)" class="circular ui icon button">
+                                        <i class="icon cart"></i>
+                                    </button>
+                                    <button @click="edit(garment)" class="circular ui icon button">
+                                        <i class="icon edit"></i>
+                                    </button>
+                                    <button @click="remove(garment)" class="circular ui icon button">
+                                        <i class="icon delete"></i>
+                                    </button>
+                                </div>
+                            </span>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+
+
+
+
+            <!-- Footer -->
+            <h4 class="ui horizontal divider header">
+                <i class="info icon"></i>
+                Info
+            </h4>
+            <div class="footer">
+                <div class="contact">
+                    <strong>Contact us at:</strong>
+                    (021)-541-1000
+
+                    <strong>twitter /fb /insta </strong> @missy_tee
+                </div>
+                <div class="address">
+                    Missy Tee, Good Plaza
+                    <br>
+                    Dough Road
+                    <br>
+                    Base Town
+                    <br>
+                    7890
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <!-- <script src="app.js"></script> -->
+    <!-- <script src="field-manager.js"></script> -->
+    <!-- <script src="add-garment.js"></script> -->
+
+    <script>
+        $(function () {
+            $("#test").click(function () {
+                $(".test").modal('show');
+            });
+            $(".test").modal({
+                closable: true
+            });
+        });
+    </script>
 </body>
+
 </html>
