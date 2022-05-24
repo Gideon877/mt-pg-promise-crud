@@ -51,9 +51,9 @@ module.exports = async (app, db) => {
 	app.get('/api/garments', auth, async (req, res) => {
 
 		let garments = [];
+		const count = await getTotal() || 10;
 		try {
 			const { gender, season, page = 1 } = req.query;
-			const count = await getTotal() || 10;
 			const limit = Number(count / 3).toFixed();
 			let offset = (page - 1) * limit + 1;
 			offset = (offset == 1) ? 0 : offset;
@@ -72,12 +72,14 @@ module.exports = async (app, db) => {
 			}
 			res.json({
 				data: garments,
-				garments
+				garments,
+				count
 			})
 		} catch (error) {
 			console.log(error)
 			res.json({
 				data: garments,
+				count,
 				garments
 			})
 		}
@@ -192,7 +194,7 @@ module.exports = async (app, db) => {
 	app.get('/api/garments/price/:price', auth, async (req, res) => {
 		try {
 			const maxPrice = Number(req.params.price);
-			const garments = await db.many(`select * from garment where price >= $1`, [maxPrice]);
+			const garments = await db.many(`select * from garment where price <= $1`, [maxPrice]);
 			res.json({
 				garments
 			});
