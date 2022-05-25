@@ -16,6 +16,7 @@ document.addEventListener('alpine:init', () => {
             error: null,
             genderFilter: '',
             seasonFilter: '',
+            cartItems: [],
             maxPrice: 10,
             garments: [],
             addGarment: false,
@@ -29,7 +30,7 @@ document.addEventListener('alpine:init', () => {
             page: 1,
             count: 0,
             user: {
-                username: 'Gideon877',
+                username: '',
                 token: null,
                 password: 'password',
                 lastName: 'Smith',
@@ -42,9 +43,20 @@ document.addEventListener('alpine:init', () => {
                 description: `We're fetching that content for you.`,
                 status: 'violet'
             },
+            defaultError: {
+                header: 'Just one second',
+                description: `We're fetching that content for you.`,
+                status: 'violet'
+            },
 
             init() {
                 this.user.token = localStorage['token'];
+                this.user.username = localStorage['username'];
+                if(this.user.username == undefined) {
+                    this.signIn = true;
+                    return
+                }
+
                 if (this.user.token == undefined) {
                     this.signIn = true;
                 } else {
@@ -54,7 +66,8 @@ document.addEventListener('alpine:init', () => {
             },
 
             add(garment) {
-                alert('add' + JSON.stringify(garment.season));
+                // alert('add' + JSON.stringify(garment.season));
+                this.cartItems.push(garment);
             },
 
             paginate(number) {
@@ -120,6 +133,7 @@ document.addEventListener('alpine:init', () => {
                     .then(auth => {
                         setTimeout(() => {
                             localStorage.setItem('token', auth.token);
+                            localStorage.setItem('username', auth.user.username);
                             this.user = {
                                 ...auth.user, token: auth.token
                             };
@@ -127,20 +141,20 @@ document.addEventListener('alpine:init', () => {
                             this.error = null;
                             this.signIn = false;
                             this.showMenu = true;
-                        }, 1500);
+                        }, 100);
                     })
                     .catch((e) => setTimeout(() => this.error = `Wrong username or password`, 500));
                 setTimeout(() => {
                     this.loading = false;
                     this.error = null;
-                }, 2000)
+                }, 5000)
             },
 
             logout() {
                 this.signIn = true;
                 this.user = {}
                 this.showMenu = false;
-                localStorage.clear('token');
+                localStorage.clear();
                 this.errors = {
                     header: `Logging out`,
                     description: `You are logging out of the application`,
@@ -156,16 +170,16 @@ document.addEventListener('alpine:init', () => {
                 axios
                     .post(`/api/user/`, { ...this.user })
                     .then(() => setTimeout(() => {
-                        this.signIn = true;
-                        this.signUp = false;
-                        this.signUpLoading = false;
                         this.errors = {
                             header: `Signup successfully. `,
                             status: 'success',
                             description: `Login with your username and password to access the dashboard.`
                         };
+                        this.signUpLoading = false;
+                        this.signUp = false;
+                        this.signIn = true;
                         this.clearMessage();
-                    }, 3000))
+                    }, 1000))
                     .catch(err => {
                         if (err.response.status == 501) {
                             this.signIn = false
@@ -183,7 +197,7 @@ document.addEventListener('alpine:init', () => {
 
             clearMessage() {
                 setTimeout(() => {
-                    this.errors = {};
+                    this.errors = this.defaultError;
                     this.showFeedback = false;
                 }, 1000)
             },

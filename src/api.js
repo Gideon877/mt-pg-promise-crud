@@ -26,7 +26,7 @@ module.exports = async (app, db) => {
 				if (!isEqual) {
 					throw new Error('Password is incorrect!');
 				}
-				const token = jwt.sign({ username }, 'secret', { expiresIn: '1h' });
+				const token = jwt.sign({ username }, 'secret', { expiresIn: '5h' });
 
 				res.status(200).json({
 					token,
@@ -213,7 +213,7 @@ module.exports = async (app, db) => {
 			if (existingUser !== null) {
 				throw new Error('A user with the same username already exists. Specify another username.')
 			}
-			const hashedPassword = await bcrypt.hash(password, 128);
+			const hashedPassword = await bcrypt.hash(password, 16);
 
 			await db.none(`insert into users (username, password, first_name, last_name) values($1, $2, $3, $4)`, [username, hashedPassword, firstName, lastName]);
 			res.status(200).json({});

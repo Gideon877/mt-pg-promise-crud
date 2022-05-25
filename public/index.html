@@ -124,17 +124,9 @@
 			<div class="one wide column">
 			</div>
 
-			<div x-show="addGarment" class="two wide column">
-				<h4 class="ui horizontal divider header">
-					<div class="ui labeled button" tabindex="0">
-						<div class="ui red button">
-							<i class="stop icon"></i> Refine by Category 
-						</div>
-						<a x-text="`${garments.length} of ${count}`" class="ui basic red left pointing label">
-							0
-						</a>
-					</div>
-				</h4>
+			<div x-show="showMenu" class="two wide column">
+				<br>
+				<br>
 				<br>
 				<br>
 				<br>
@@ -142,29 +134,31 @@
 				<br>
 				<br>
 
+
 				<!-- Add new Garment Form -->
 				<div x-show="addGarment" class="ui container">
 					<h3 align="center">Add New Garment</h3>
-		
+
 					<div :class=" loading ? 'ui loading form' : 'ui form'">
 						<div class="field">
 							<label>Description</label>
-							<input x-model="garmentData.description" type="text" name="description" placeholder="Please Enter Your Description">
+							<input x-model="garmentData.description" type="text" name="description"
+								placeholder="Please Enter Your Description">
 						</div>
 						<div class="field">
 							<label>Season</label>
-							<input :disabled="garmentData.description.length <= 3" x-model="garmentData.season" type="text" name="season"
-								placeholder="Please Enter Season">
+							<input :disabled="garmentData.description.length <= 3" x-model="garmentData.season"
+								type="text" name="season" placeholder="Please Enter Season">
 						</div>
 						<div class="field">
 							<label>Gender</label>
-							<input :disabled="garmentData.season.length <= 3" x-model="garmentData.gender" type="text" name="gender"
-								placeholder="Please Enter Gender">
+							<input :disabled="garmentData.season.length <= 3" x-model="garmentData.gender" type="text"
+								name="gender" placeholder="Please Enter Gender">
 						</div>
 						<div class="field">
 							<label>Price</label>
-							<input :disabled="garmentData.gender.length <= 3" x-model="garmentData.price" type="number" name="price"
-								placeholder="Please Enter Price">
+							<input :disabled="garmentData.gender.length <= 3" x-model="garmentData.price" type="number"
+								name="price" placeholder="Please Enter Price">
 						</div>
 						<div class="field">
 							<label>Image</label>
@@ -182,7 +176,7 @@
 								<i class="user secret icon"></i>
 								Cancel
 							</button>
-		
+
 						</div>
 					</div>
 					<div class="ui message" x-show="error" x-text="error"></div>
@@ -191,10 +185,21 @@
 				<!-- Filter menu -->
 
 				<div class="filter" x-show="!addGarment">
-					<h2>Filter</h2>
 					<div class="genders ui form">
-						<div class="inline fields">
-							<label for="gender">Select gender:</label>
+						<div class="grouped fields">
+							<label for="gender">
+								<h4 class="ui horizontal divider header">
+									<div class="ui labeled button" tabindex="0">
+										<div class="ui black button">
+											<i class="user icon"></i> Select Gender:
+										</div>
+										<a x-text="(genderFilter == '') ? 'All' : genderFilter"
+											class="ui basic black left pointing label">
+
+										</a>
+									</div>
+								</h4>
+							</label>
 							<div class="field">
 								<div class="ui radio">
 									<label>
@@ -232,8 +237,20 @@
 					</div>
 					<div class="seasons ui form">
 
-						<div class="inline fields">
-							<label for="season">Select season:</label>
+						<div class="grouped fields">
+							<label for="season">
+								<h4 class="ui horizontal divider header">
+									<div class="ui labeled button" tabindex="0">
+										<div class="ui black button">
+											<i class="cloud icon"></i> Select Season:
+										</div>
+										<a x-text="(seasonFilter == '') ? 'All' : seasonFilter"
+											class="ui basic black left pointing label">
+
+										</a>
+									</div>
+								</h4>
+							</label>
 							<div class="field">
 								<div class="ui radio">
 									<label>
@@ -266,7 +283,7 @@
 									<label>
 										<input @change="getGarments()" x-model="seasonFilter" type="radio" name="season"
 											value="All Seasons"> All
-										seasons
+										Seasons
 									</label>
 								</div>
 							</div>
@@ -275,7 +292,18 @@
 					</div>
 					<div class="ui form">
 						<div class="inline field">
-							<label for="range">Filter by price range:</label>
+							<label for="range">
+								<h4 class="ui horizontal divider header">
+									<div class="ui labeled button" tabindex="0">
+										<div class="ui black button">
+											<i class="user icon"></i> Price Range:
+										</div>
+										<a x-text="`0 - ${maxPrice}`" class="ui basic black left pointing label">
+
+										</a>
+									</div>
+								</h4>
+							</label>
 							<input type="range" @change="getGarmentsByPrice()" x-model="maxPrice" name="maxPrice"
 								max="1000" step="50" class="maxPrice ui range" value="0">
 							<i class="euro sign icon"></i><span class="showmaxPrice" x-text="maxPrice">0</span>.00
@@ -285,7 +313,7 @@
 
 				<br>
 			</div>
-			<div class="twelve wide column">
+			<div class="ten wide column">
 				<!-- <h1 style="background-color: greenyellow;">Ten Wide</h1> -->
 				<div x-show="showMenu" class="ui container">
 					<!-- Menu -->
@@ -305,6 +333,10 @@
 									<a class="item active">
 										<i class="user icon"></i>
 										<b x-text="user.username">user</b>
+									</a>
+									<a class="item active" x-show="cartItems.length" >
+										<i class="cart icon"></i>
+										<b x-text="cartItems.length">0</b>
 									</a>
 									<a class="item active" @click="logout()">
 										<i class="sign-out icon"></i>
@@ -396,7 +428,7 @@
 									</span>
 									<span class="right floated star">
 										<div class="mini ui buttons">
-											<button @click="create(garment)" class="circular ui icon button">
+											<button @click="add(garment)" class="circular ui icon button">
 												<i class="icon cart"></i>
 											</button>
 											<button @click="edit(garment)" class="circular ui icon button">
@@ -441,8 +473,46 @@
 				</div>
 			</div>
 
-			<div class="one wide column">
+			<div class="three wide column" x-show="showMenu">
 				<!-- <h1 style="background-color: red;">One Wide</h1> -->
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<br>
+				<div x-show="cartItems.length > 0">
+
+					<h4 class="ui horizontal divider header">
+						<div class="ui labeled button" tabindex="0">
+							<div class="ui black button">
+								<i class="cart icon"></i> Cart
+							</div>
+							<a x-text="cartItems.length" class="ui basic black left pointing label">
+
+							</a>
+						</div>
+					</h4>
+					<table class="ui celled table">
+						<thead>
+							<tr>
+								<th>Item</th>
+								<th>Price</th>
+								<th>Qty</th>
+							</tr>
+						</thead>
+						<tbody>
+							<template x-for="garment in cartItems">
+								<tr>
+									<td x-text="garment.description" data-label="description"></td>
+									<td x-text="garment.price" data-label="price">24</td>
+									<td x-text="0" data-label="qty">1</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
+
 			</div>
 		</div>
 
