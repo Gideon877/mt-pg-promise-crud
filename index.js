@@ -25,8 +25,16 @@ const getPSQLConnection = () => {
     };
 }
 
+
+
 const pgp = PgPromise({});
-const db = pgp(DATABASE_URL);
+const db = pgp({
+    connectionString: DATABASE_URL,
+    max: 30,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
 
 API(app, db);
 
