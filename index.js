@@ -26,7 +26,7 @@ const getPSQLConnection = () => {
 }
 
 const pgp = PgPromise({});
-const db = pgp(getPSQLConnection());
+const db = pgp(DATABASE_URL);
 
 API(app, db);
 
