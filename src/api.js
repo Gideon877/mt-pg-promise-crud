@@ -4,6 +4,21 @@ const jwt = require('jsonwebtoken');
 
 module.exports = async (app, db) => {
 
+	const getUserCart = async (userId) => {
+		const cart = await db.oneOrNone('select * from cart where user_id = $1 ', [userId]);
+		const sql = `select * from garment_cart 
+						join garment on garment.id = garment_id
+						where cart_id = $1`
+		const cartItems = await db.manyOrNone(sql, [cart.id]);
+
+		return {
+			...cart,
+			cartItems
+		}
+
+	}
+
+	// console.log(await getUserCart('johnsmith'))
 	const getTotal = async (req, res) => {
 		const result = await db.one('select count(*) from garment');
 		return result.count;
@@ -35,7 +50,8 @@ module.exports = async (app, db) => {
 						lastName: user.last_name,
 						username: user.username,
 						id: user.id
-					}
+					},
+					cart: await getUserCart(user.id)
 				})
 
 			} else {
@@ -53,11 +69,11 @@ module.exports = async (app, db) => {
 		let garments = [];
 		const count = await getTotal() || 10;
 		try {
-			const { gender, season, page = 1 } = req.query;
+			const { gender, season, page = 1, userId } = req.query;
 			const limit = Number(count / 3).toFixed();
 			let offset = (page - 1) * limit + 1;
 			offset = (offset == 1) ? 0 : offset;
-			
+
 			if (!season && !gender) {
 				garments = await db.many(`select * from garment limit $1 offset $2`, [limit, offset]);
 			}
@@ -73,7 +89,8 @@ module.exports = async (app, db) => {
 			res.json({
 				data: garments,
 				garments,
-				count
+				count,
+				cart: await getUserCart(userId)
 			})
 		} catch (error) {
 			console.log(error)

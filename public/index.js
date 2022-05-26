@@ -16,7 +16,7 @@ document.addEventListener('alpine:init', () => {
             error: null,
             genderFilter: '',
             seasonFilter: '',
-            cartItems: [],
+            cart: [],
             maxPrice: 10,
             garments: [],
             addGarment: false,
@@ -30,7 +30,8 @@ document.addEventListener('alpine:init', () => {
             page: 1,
             count: 0,
             user: {
-                username: '',
+                username: 'johnsmith',
+                id: null,
                 token: null,
                 password: 'password',
                 lastName: 'Smith',
@@ -52,7 +53,7 @@ document.addEventListener('alpine:init', () => {
             init() {
                 this.user.token = localStorage['token'];
                 this.user.username = localStorage['username'];
-                if(this.user.username == undefined) {
+                if (this.user.username == undefined) {
                     this.signIn = true;
                     return
                 }
@@ -67,7 +68,7 @@ document.addEventListener('alpine:init', () => {
 
             add(garment) {
                 // alert('add' + JSON.stringify(garment.season));
-                this.cartItems.push(garment);
+                this.cart.push(garment);
             },
 
             paginate(number) {
@@ -113,7 +114,7 @@ document.addEventListener('alpine:init', () => {
                             ? this.signIn = true
                             : this.garments = []
                     );
-                
+
             },
 
             edit(garment) {
@@ -137,6 +138,9 @@ document.addEventListener('alpine:init', () => {
                             this.user = {
                                 ...auth.user, token: auth.token
                             };
+                            this.cart = auth.cart;
+                            console.table(this.cart)
+                            this.cart = auth.cart;
                             this.getGarments();
                             this.error = null;
                             this.signIn = false;
@@ -216,21 +220,26 @@ document.addEventListener('alpine:init', () => {
             },
 
             getGarments() {
-                const { token } = this.user;
+                const { token, username } = this.user;
                 const { genderFilter, seasonFilter } = this;
                 axios
                     .get(`/api/garments?gender=${genderFilter}&season=${seasonFilter}&page=${this.page}`, {
-                        params: { token }
+                        params: { token, username  }
                     })
                     .then((result) => result.data)
-                    .then(data => { this.garments = data.garments; this.count = data.count })
+                    .then(data => {
+                        this.garments = data.garments;
+                        this.count = data.count;
+                        this.cart = data.cart;
+
+                    })
                     .catch(err => {
                         if (err.response.status == 401) {
                             this.logout()
                             console.log(err);
                             this.showMenu = false;
                         }
-                          
+
 
                     });
             },

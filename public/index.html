@@ -334,9 +334,9 @@
 										<i class="user icon"></i>
 										<b x-text="user.username">user</b>
 									</a>
-									<a class="item active" x-show="cartItems.length" >
+									<a class="item active" x-show="cart.cartItems.length" >
 										<i class="cart icon"></i>
-										<b x-text="cartItems.length">0</b>
+										<b x-text="cart.cartItems.length">0</b>
 									</a>
 									<a class="item active" @click="logout()">
 										<i class="sign-out icon"></i>
@@ -481,14 +481,14 @@
 				<br>
 				<br>
 				<br>
-				<div x-show="cartItems.length > 0">
+				<div x-show="cart.cartItems.length > 0">
 
 					<h4 class="ui horizontal divider header">
 						<div class="ui labeled button" tabindex="0">
 							<div class="ui black button">
-								<i class="cart icon"></i> Cart
+								<i class="cart icon"></i> <b x-text="cart.name"></b>
 							</div>
-							<a x-text="cartItems.length" class="ui basic black left pointing label">
+							<a x-text="cart.cartItems.length" class="ui basic black left pointing label">
 
 							</a>
 						</div>
@@ -502,11 +502,11 @@
 							</tr>
 						</thead>
 						<tbody>
-							<template x-for="garment in cartItems">
+							<template x-for="garment in cart.cartItems">
 								<tr>
 									<td x-text="garment.description" data-label="description"></td>
 									<td x-text="garment.price" data-label="price">24</td>
-									<td x-text="0" data-label="qty">1</td>
+									<td x-text="1" data-label="qty">1</td>
 								</tr>
 							</template>
 						</tbody>
