@@ -15,7 +15,8 @@ create table users
     first_name text,
     last_name text,
     password text,
-    active boolean default true
+    active boolean default true,
+    role text default 'USER'
 );
 
 create table cart
@@ -31,6 +32,7 @@ create table garment_cart
     id serial not null primary key,
     cart_id int,
     garment_id int,
+    qty int default 1,
 	foreign key (cart_id) references cart(id),
     foreign key (garment_id) references garment(id)
 );

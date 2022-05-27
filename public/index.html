@@ -334,9 +334,9 @@
 										<i class="user icon"></i>
 										<b x-text="user.username">user</b>
 									</a>
-									<a class="item active" x-show="cart.cartItems.length" >
+									<a class="item active" x-show="cartItemTotal" >
 										<i class="cart icon"></i>
-										<b x-text="cart.cartItems.length">0</b>
+										<b x-text="cartItemTotal">0</b>
 									</a>
 									<a class="item active" @click="logout()">
 										<i class="sign-out icon"></i>
@@ -428,7 +428,7 @@
 									</span>
 									<span class="right floated star">
 										<div class="mini ui buttons">
-											<button @click="add(garment)" class="circular ui icon button">
+											<button @click="add(garment, 'ADD')" class="circular ui icon button">
 												<i class="icon cart"></i>
 											</button>
 											<button @click="edit(garment)" class="circular ui icon button">
@@ -506,7 +506,11 @@
 								<tr>
 									<td x-text="garment.description" data-label="description"></td>
 									<td x-text="garment.price" data-label="price">24</td>
-									<td x-text="1" data-label="qty">1</td>
+									<td data-label="qty">
+										<button @click="add(garment, 'REMOVE')">-</button>
+										<span x-text="garment.qty"></span>
+										<button @click="add(garment, 'ADD')">+</button>
+									</td>
 								</tr>
 							</template>
 						</tbody>

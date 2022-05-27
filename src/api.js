@@ -8,9 +8,8 @@ module.exports = async (app, db) => {
 		const cart = await db.oneOrNone('select * from cart where user_id = $1 ', [userId]);
 		const sql = `select * from garment_cart 
 						join garment on garment.id = garment_id
-						where cart_id = $1`
+						where cart_id = $1 order by description asc`
 		const cartItems = await db.manyOrNone(sql, [cart.id]);
-
 		return {
 			...cart,
 			cartItems
@@ -18,7 +17,9 @@ module.exports = async (app, db) => {
 
 	}
 
-	// console.log(await getUserCart('johnsmith'))
+
+	const getUserId = async (username) => await db.oneOrNone('select id from users where username = $1', [username], r => r.id);
+	// console.log(await getUserId('johnsmith'))
 	const getTotal = async (req, res) => {
 		const result = await db.one('select count(*) from garment');
 		return result.count;
@@ -69,7 +70,8 @@ module.exports = async (app, db) => {
 		let garments = [];
 		const count = await getTotal() || 10;
 		try {
-			const { gender, season, page = 1, userId } = req.query;
+			const { gender, season, page = 1, username } = req.query;
+			const userId = await getUserId(username)
 			const limit = Number(count / 3).toFixed();
 			let offset = (page - 1) * limit + 1;
 			offset = (offset == 1) ? 0 : offset;
@@ -86,11 +88,12 @@ module.exports = async (app, db) => {
 			if (season && gender) {
 				garments = await db.many(`select * from garment where gender = $1 and season = $2`, [gender, season]);
 			}
+
 			res.json({
 				data: garments,
 				garments,
 				count,
-				cart: await getUserCart(userId)
+				cart: await getUserCart(await getUserId(username))
 			})
 		} catch (error) {
 			console.log(error)
@@ -245,5 +248,32 @@ module.exports = async (app, db) => {
 	})
 
 
+	app.post('/api/cartItem', async (req, res) => {
+		try {
+			const { garmentId, cartId, type } = req.body;
+			const sql = `insert into garment_cart (cart_id, garment_id) values($1, $2);`;
+			const cartItem = await db.oneOrNone('select * from garment_cart where cart_id = $1 AND garment_id = $2', [cartId, garmentId])
+			if (cartItem == null) {
+				await db.none(sql, [cartId, garmentId]);
+			} else {
+				if (type == 'ADD') {
+					await db.none(`update garment_cart set qty = qty + 1 where cart_id = $1 AND garment_id = $2`, [cartId, garmentId]);
+				}
+
+				if (type == 'REMOVE') {
+					if (cartItem.qty <= 1) {
+						await db.none(`delete from garment_cart where cart_id = $1 AND garment_id = $2`, [cartId, garmentId]);
+					} else {
+						await db.none(`update garment_cart set qty = qty - 1 where cart_id = $1 AND garment_id = $2`, [cartId, garmentId]);
+					}
+				}
+			}
+			res.status(200)
+				.json({ message: 'Added successfully' })
+		} catch (error) {
+			console.log(error);
+			res.status(501).json({ error })
+		}
+	})
 
 }

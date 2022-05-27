@@ -16,14 +16,15 @@ document.addEventListener('alpine:init', () => {
             error: null,
             genderFilter: '',
             seasonFilter: '',
-            cart: [],
+            cart: {},
+            cartItemTotal: 0,
             maxPrice: 10,
             garments: [],
             addGarment: false,
             garmentData: {
                 description: '',
                 price: '',
-                img: 'fashion.png',
+                img: '',
                 season: '',
                 gender: ''
             },
@@ -63,12 +64,15 @@ document.addEventListener('alpine:init', () => {
                 } else {
                     this.showMenu = true;
                     this.getGarments();
+                   
                 }
             },
 
-            add(garment) {
-                // alert('add' + JSON.stringify(garment.season));
-                this.cart.push(garment);
+            add(garment, type) {
+                axios
+                    .post('/api/cartItem', { garmentId: garment.id, cartId: this.cart.id, type })
+                    .then(() => this.getGarments())
+                    .catch(err => console.log(err))
             },
 
             paginate(number) {
@@ -224,13 +228,17 @@ document.addEventListener('alpine:init', () => {
                 const { genderFilter, seasonFilter } = this;
                 axios
                     .get(`/api/garments?gender=${genderFilter}&season=${seasonFilter}&page=${this.page}`, {
-                        params: { token, username  }
+                        params: { token, username }
                     })
                     .then((result) => result.data)
                     .then(data => {
                         this.garments = data.garments;
                         this.count = data.count;
                         this.cart = data.cart;
+                        // console.table(data.cart);
+                        this.cartItemTotal = _.sumBy(this.cart.cartItems, item => Number(item.qty))
+                        // cartItemTotal
+                        console.log(this.cartItemTotal)
 
                     })
                     .catch(err => {
