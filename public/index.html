@@ -313,7 +313,7 @@
 
 				<br>
 			</div>
-			<div class="ten wide column">
+			<div class="nine wide column">
 				<!-- <h1 style="background-color: greenyellow;">Ten Wide</h1> -->
 				<div x-show="showMenu" class="ui container">
 					<!-- Menu -->
@@ -334,7 +334,7 @@
 										<i class="user icon"></i>
 										<b x-text="user.username">user</b>
 									</a>
-									<a class="item active" x-show="cartItemTotal" >
+									<a class="item active" x-show="cartItemTotal">
 										<i class="cart icon"></i>
 										<b x-text="cartItemTotal">0</b>
 									</a>
@@ -399,7 +399,7 @@
 						<p>That filter need some change
 						</p>
 					</div>
-					<div class="ui special five stackable cards animate__animated animate__fadeInLeft">
+					<div class="ui special four stackable cards animate__animated animate__fadeInLeft">
 						<template x-for="garment in garments">
 							<div class="card">
 								<div class="ui dimmer">
@@ -473,7 +473,7 @@
 				</div>
 			</div>
 
-			<div class="three wide column" x-show="showMenu">
+			<div class="four wide column" x-show="showMenu">
 				<!-- <h1 style="background-color: red;">One Wide</h1> -->
 				<br>
 				<br>
@@ -498,6 +498,7 @@
 							<tr>
 								<th>Item</th>
 								<th>Price</th>
+								<th>Total</th>
 								<th>Qty</th>
 							</tr>
 						</thead>
@@ -506,10 +507,16 @@
 								<tr>
 									<td x-text="garment.description" data-label="description"></td>
 									<td x-text="garment.price" data-label="price">24</td>
+									<td x-text="`R${(garment.price * garment.qty).toFixed(2)}`" data-label="price">24</td>
 									<td data-label="qty">
-										<button @click="add(garment, 'REMOVE')">-</button>
-										<span x-text="garment.qty"></span>
-										<button @click="add(garment, 'ADD')">+</button>
+										<div class="mini ui buttons">
+
+											<button class="circular ui icon button"
+												@click="add(garment, 'REMOVE')">-</button>
+											<span class="circular ui icon disabled button" x-text="garment.qty"></span>
+											<button class="circular ui icon button"
+												@click="add(garment, 'ADD')">+</button>
+										</div>
 									</td>
 								</tr>
 							</template>
