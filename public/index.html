@@ -329,6 +329,10 @@
 									<span :class="addGarment ? 'red' : 'teal'"
 										x-text="addGarment ? 'Close' : 'Add'"></span>
 								</a>
+								<a class="item active">
+									<i class="dollar icon"></i>
+									<span x-text="`R${account && account.balance ? account.balance : 0.00}`"></span>
+								</a>
 								<div class="right menu">
 									<a class="item active">
 										<i class="user icon"></i>
@@ -520,6 +524,14 @@
 									</td>
 								</tr>
 							</template>
+							<tr>
+								<td>
+									<div class="mini ui buttons">
+										<button class="circular ui icon button" @click="purchaseItems()">Buy</button>
+										<button class="circular ui icon button" @click="clearCart()">Clear</button>
+									</div>
+								</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
