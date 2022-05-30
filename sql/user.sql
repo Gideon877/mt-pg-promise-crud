@@ -23,6 +23,7 @@ create table cart
 (
     id serial not null primary key,
     name text default 'wishlish',
+    status text not null default 'OPEN'
     user_id int,
 	foreign key (user_id) references users(id)
 );

@@ -30,6 +30,7 @@ document.addEventListener('alpine:init', () => {
             },
             page: 1,
             count: 0,
+            account: {},
             user: {
                 username: 'johnsmith',
                 id: null,
@@ -64,7 +65,7 @@ document.addEventListener('alpine:init', () => {
                 } else {
                     this.showMenu = true;
                     this.getGarments();
-                   
+
                 }
             },
 
@@ -223,6 +224,19 @@ document.addEventListener('alpine:init', () => {
                     );
             },
 
+            purchaseItems() {
+                console.log(this.cart, this.user)
+                const { id, user_id } = this.cart;
+                const [cartId, userId] = [id, user_id];
+                axios.post('/api/purchase', { cartId, userId })
+                    .then(r => this.getGarments())
+                    .catch(err => console.log(err))
+            },
+
+            clearCart() {
+                alert('clear cart')
+            },
+
             getGarments() {
                 const { token, username } = this.user;
                 const { genderFilter, seasonFilter } = this;
@@ -238,7 +252,7 @@ document.addEventListener('alpine:init', () => {
                         // console.table(data.cart);
                         this.cartItemTotal = _.sumBy(this.cart.cartItems, item => Number(item.qty))
                         // cartItemTotal
-                        console.log(this.cartItemTotal)
+                        this.account = data.account;
 
                     })
                     .catch(err => {
