@@ -31,4 +31,4 @@ create table garment_receipt
 CREATE TRIGGER on_create_user_account
 AFTER INSERT ON users
 FOR EACH ROW
-EXECUTE PROCEDURE trigger_create_user_cart();
+EXECUTE PROCEDURE trigger_create_user_account();

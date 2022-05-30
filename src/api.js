@@ -1,8 +1,13 @@
 const auth = require("./middleware/auth");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const _ = require('lodash');
 module.exports = async (app, db) => {
+
+	const CartStatus = {
+		Open: 'OPEN',
+		Closed: 'CLOSED'
+	}
 
 	const getUserCart = async (userId) => {
 		const cart = await db.oneOrNone('select * from cart where user_id = $1 ', [userId]);
@@ -17,6 +22,19 @@ module.exports = async (app, db) => {
 
 	}
 
+	const createReceipt = async ({ garmentCartIds, userId, accountId }) => {
+		const sql = `insert into garment_receipt (garment_cart_id, user_id, account_id) values($1, $2, $3)`;
+		await garmentCartIds.forEach(async (id) => {
+			await db.none(sql, [id, userId, accountId]);
+			// await db.none('update garment_cart set status')
+		});
+
+		
+	}
+
+	const account = async (userId) => await db.oneOrNone('select * from account where user_id = $1', [userId]);
+
+	const updateAccountBalance = async ({ accountId, balance }) => await db.none('update account set balance = balance - $1 where id = $2', [balance, accountId]);
 
 	const getUserId = async (username) => await db.oneOrNone('select id from users where username = $1', [username], r => r.id);
 	// console.log(await getUserId('johnsmith'))
@@ -30,6 +48,17 @@ module.exports = async (app, db) => {
 			name: 'joe'
 		});
 	});
+
+	const getCartTotal = async (userId) => {
+		const cart = await getUserCart(userId)
+		const sum = _.sumBy(cart.cartItems, (item) => item.qty * item.price);
+		return sum;
+	}
+
+	const getGarmentCartId = async (cartId) => {
+		return await db.manyOrNone('select id from garment_cart where cart_id = $1', [cartId])
+	}
+
 
 	// API routes
 
@@ -274,6 +303,34 @@ module.exports = async (app, db) => {
 			console.log(error);
 			res.status(501).json({ error })
 		}
+	})
+
+
+	app.post('/api/purchase', async (req, res) => {
+		// update account balance
+		// change garment_cart status
+		// create a receipt
+		try {
+			const { userId, cartId } = req.body;
+			const account = await account(userId);
+			const balance = await getCartTotal(userId);
+			if (balance - account.balance >= 0) {
+				await updateAccountBalance({ accountId: account.id, balance });
+				await db.none('UPDATE garment_cart SET status = $1 where cart_id = $2', [CartStatus.Closed, cartId]);
+				const garmentCartIds = await getGarmentCartId(cartId)
+				await createReceipt({ userId, cartId, garmentCartIds });
+				res.status(200)
+					.json({ message: 'Purchase successfully' });
+			} else {
+				throw Error('Lower balance')
+			}
+		} catch (error) {
+			console.log(error)
+			res.status(501).json({
+				message: error.message
+			})
+		}
+
 	})
 
 }
