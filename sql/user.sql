@@ -33,6 +33,7 @@ create table garment_cart
     cart_id int,
     garment_id int,
     qty int default 1,
+    status text default 'OPEN'
 	foreign key (cart_id) references cart(id),
     foreign key (garment_id) references garment(id)
 );
