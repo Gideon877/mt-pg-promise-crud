@@ -9,11 +9,11 @@ module.exports = async (app, db) => {
 		Closed: 'CLOSED'
 	}
 
-	const createDefaultCart = async (userId)=> await db.none('insert into cart (user_id) values ($1)', [userId]);
+	const createDefaultCart = async (userId) => await db.none('insert into cart (user_id) values ($1)', [userId]);
 
 	const getUserCart = async (userId) => {
 		let cart = await db.oneOrNone(`select * from cart where status = 'OPEN' AND user_id = $1`, [userId]);
-		if(cart == null) {
+		if (cart == null) {
 			await createDefaultCart(userId);
 			cart = await db.oneOrNone(`select * from cart where status = 'OPEN' AND user_id = $1`, [userId]);
 		}
@@ -35,7 +35,7 @@ module.exports = async (app, db) => {
 			// await db.none('update garment_cart set status')
 		});
 
-		
+
 	}
 
 	const userAccount = async (userId) => await db.oneOrNone('select * from account where user_id = $1', [userId]);
@@ -227,12 +227,12 @@ module.exports = async (app, db) => {
 	});
 
 
-	app.delete('/api/garments', auth, async (req, res) => {
+	app.delete('/api/garments/:id', auth, async (req, res) => {
 
 		try {
-			const { gender } = req.query;
-			// delete the garments with the specified gender
-			await db.none(`delete from garment where gender = $1`, [gender]);
+			const { id } = req.params;
+			// delete the garments with the specified id
+			await db.none(`delete from garment where id = $1`, [id]);
 
 			res.json({
 				status: 'success'
@@ -240,7 +240,7 @@ module.exports = async (app, db) => {
 		} catch (err) {
 			// console.log(err);
 			res.json({
-				status: 'success',
+				status: 'failed',
 				error: err.stack
 			})
 		}
@@ -320,7 +320,7 @@ module.exports = async (app, db) => {
 			const { userId, cartId } = req.body;
 			const account = await userAccount(userId);
 			const balance = await getCartTotal(userId);
-			
+
 			if (account.balance - balance >= 0) {
 				await updateAccountBalance({ accountId: account.id, balance });
 				await db.none('UPDATE garment_cart SET status = $1 where cart_id = $2', [CartStatus.Closed, cartId]);

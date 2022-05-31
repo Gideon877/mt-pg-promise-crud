@@ -126,8 +126,13 @@ document.addEventListener('alpine:init', () => {
                 alert('edit' + JSON.stringify(garment.season));
             },
 
-            remove(garment) {
-                alert('remove' + JSON.stringify(garment.season));
+            remove(id) {
+                axios
+                    .delete(`/api/garments/${id}`, { data: { token: this.user.token } })
+                    .then(r => r.data.status)
+                    .then(r => console.log(r))
+                    .then(() => this.getGarments())
+                    .catch(err => console.log(err))
             },
 
             login() {
